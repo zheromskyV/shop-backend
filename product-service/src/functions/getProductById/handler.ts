@@ -7,7 +7,7 @@ import { middyfy } from '@libs/lambda';
 import { Product } from 'src/models/product.model';
 import { products } from '../../mocks/products';
 
-const getProductById = async (event: APIGatewayProxyEvent) => {
+export const getProductById = async (event: APIGatewayProxyEvent) => {
   const { productId } = event.pathParameters;
 
   const product = products.find(({ id }: Product) => productId === id);

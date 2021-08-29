@@ -6,7 +6,7 @@ import { middyfy } from '@libs/lambda';
 import { Product } from 'src/models/product.model';
 import { products } from '../../mocks/products';
 
-const getProductList = async () => {
+export const getProductList = async () => {
   return formatJSONResponse<Product[]>(products, 200);
 }
 
