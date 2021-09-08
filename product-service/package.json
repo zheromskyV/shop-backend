@@ -13,6 +13,7 @@
   "dependencies": {
     "@middy/core": "^1.5.2",
     "@middy/http-json-body-parser": "^1.5.2",
+    "pg": "^8.7.1",
     "source-map-support": "^0.5.19"
   },
   "devDependencies": {
@@ -23,6 +24,7 @@
     "jest": "^27.1.0",
     "json-schema-to-ts": "^1.5.0",
     "serverless": "^2.23.0",
+    "serverless-dotenv-plugin": "^3.9.0",
     "serverless-webpack": "^5.3.5",
     "ts-jest": "^27.0.5",
     "ts-loader": "^8.0.15",

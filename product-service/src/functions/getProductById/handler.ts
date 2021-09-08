@@ -4,19 +4,39 @@ import { APIGatewayProxyEvent } from 'aws-lambda';
 import { formatJSONResponse } from '@libs/apiGateway';
 import { middyfy } from '@libs/lambda';
 
-import { Product } from 'src/models/product.model';
-import { products } from '../../mocks/products';
+import { DbService } from '../../db/db.service';
+import { Product } from '../../models/product.model';
 
 export const getProductById = async (event: APIGatewayProxyEvent) => {
-  const { productId } = event.pathParameters;
+  console.log('[getProductById] Event: ', event);
 
-  const product = products.find(({ id }: Product) => productId === id);
+  let db: DbService;
 
-  if (!product) {
-    return formatJSONResponse<string>('Product not found', 404);
+  try {
+    const { productId } = event.pathParameters;
+
+    if (!productId || !DbService.isIdValid(productId)) {
+      return formatJSONResponse<string>('Bad request', 400);
+    }
+
+    db = new DbService();
+
+    await db.connect();
+
+    const product: Product = await db.getProductById(productId);
+
+    if (!product) {
+      return formatJSONResponse<string>('Product not found', 404);
+    }
+
+    return formatJSONResponse<Product>(product, 200);
+  } catch (error) {
+    console.error('[getProductById] Error: ', error);
+
+    return formatJSONResponse<string>('Internal server error', 500);
+  } finally {
+    await db?.disconnect();
   }
-
-  return formatJSONResponse<Product>(product, 200);
-}
+};
 
 export const main = middyfy(getProductById);
