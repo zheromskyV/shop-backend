@@ -4,7 +4,8 @@
   "description": "Serverless aws-nodejs-typescript template",
   "main": "serverless.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "deploy": "sls deploy",
+    "test": "npx jest"
   },
   "engines": {
     "node": ">=14.15.0"
@@ -14,12 +15,16 @@
     "@middy/http-json-body-parser": "^1.5.2",
     "aws-sdk": "^2.991.0",
     "csv-parser": "^3.0.0",
-    "source-map-support": "^0.5.19"
+    "source-map-support": "^0.5.19",
+    "ts-jest": "^27.0.5"
   },
   "devDependencies": {
     "@serverless/typescript": "^2.23.0",
     "@types/aws-lambda": "^8.10.71",
+    "@types/jest": "^27.0.2",
     "@types/node": "^14.14.25",
+    "aws-sdk-mock": "^5.3.0",
+    "jest": "^27.2.1",
     "json-schema-to-ts": "^1.5.0",
     "serverless": "^2.23.0",
     "serverless-webpack": "^5.3.5",

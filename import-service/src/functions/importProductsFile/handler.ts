@@ -17,7 +17,7 @@ export const importProductsFile = async (event: APIGatewayProxyEvent) => {
     const isCsvFormat = extname(name) === '.csv';
 
     if (!isCsvFormat) {
-      return formatJSONResponse('Bad request - invalid format', 400);
+      return formatJSONResponse('Bad request - invalid file format', 400);
     }
 
     const s3 = new AWS.S3({ region: 'eu-west-1' });
