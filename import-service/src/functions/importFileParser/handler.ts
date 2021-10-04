@@ -1,7 +1,7 @@
 import 'source-map-support/register';
 import { S3Event } from 'aws-lambda/trigger/s3';
 import * as AWS from 'aws-sdk';
-import * as csv from 'csv-parser';
+import csv from 'csv-parser';
 
 import { formatJSONResponse } from '@libs/apiGateway';
 import { middyfy } from '@libs/lambda';
@@ -13,6 +13,7 @@ export const importFileParser = async (event: S3Event) => {
     const bucketName: string = s3FromEvent.bucket.name;
 
     const s3 = new AWS.S3({ region: 'eu-west-1' });
+    const sqs = new AWS.SQS({ region: 'eu-west-1' });
 
     s3.getObject({
         Bucket: bucketName,
@@ -20,7 +21,12 @@ export const importFileParser = async (event: S3Event) => {
       })
       .createReadStream()
       .pipe(csv())
-      .on('data', (data) => console.log('data:', data))
+      .on('data', async (data) => {
+        await sqs.sendMessage({
+          QueueUrl: process.env.SQS_URL,
+          MessageBody: JSON.stringify(data),
+        }).promise();
+      })
       .on('error', (error) => {
         throw error;
       })

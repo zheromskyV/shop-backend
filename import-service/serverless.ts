@@ -24,6 +24,7 @@ const serverlessConfiguration: AWS = {
     },
     environment: {
       AWS_NODEJS_CONNECTION_REUSE_ENABLED: '1',
+      SQS_URL: '\${cf:product-service-\${self:provider.stage}.catalogItemsQueueUrl}'
     },
     lambdaHashingVersion: '20201221',
     region: 'eu-west-1',
@@ -37,7 +38,12 @@ const serverlessConfiguration: AWS = {
         Effect: 'Allow',
         Action: 's3:*',
         Resource: `arn:aws:s3:::${bucketName}/*`
-      }
+      },
+      {
+        Effect: 'Allow',
+        Action: 'sqs:*',
+        Resource: '\${cf:product-service-\${self:provider.stage}.createProductTopicArn}',
+      },
     ]
   },
   functions: { importProductsFile, importFileParser },
