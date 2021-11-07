@@ -1,13 +1,14 @@
 import { Controller, All, Req, BadGatewayException, Inject, CACHE_MANAGER } from '@nestjs/common';
+import { ConfigService } from "@nestjs/config";
 import { Request } from 'express';
 import { Cache } from 'cache-manager';
 import { AppService } from './app.service';
-import { API_URL, CACHE_TTL } from "./app.constants";
 
 @Controller()
 export class AppController {
   constructor(
     private readonly appService: AppService,
+    private readonly configService: ConfigService,
     @Inject(CACHE_MANAGER) private readonly cacheManager: Cache
   ) {}
 
@@ -15,7 +16,7 @@ export class AppController {
 
   @All('*')
   async root(@Req() { originalUrl, method, body }: Request) {
-    const [, recipient] = originalUrl.split('/');
+    const recipient = originalUrl.split('/')[1];
     const shouldUseCache = method === 'GET' && recipient === 'products';
     const cachedProducts = await this.cacheManager.get(this.productsCacheKey);
 
@@ -23,14 +24,14 @@ export class AppController {
       return cachedProducts;
     }
 
-    const recipientUrl = API_URL[recipient];
+    const recipientUrl = this.configService.get<string>(recipient);
     const url = `${recipientUrl}${originalUrl}`;
 
     if (recipientUrl) {
       const { data } = await this.appService.request(method, url, body);
 
       if (shouldUseCache && !cachedProducts) {
-        await this.cacheManager.set(this.productsCacheKey, data, { ttl: CACHE_TTL });
+        await this.cacheManager.set(this.productsCacheKey, data);
       }
 
       return data;
